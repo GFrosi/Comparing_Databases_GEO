@@ -6,7 +6,7 @@ Compiling and comparing databases (GEO_based), and checking the metadata validat
 
 ```python > 3.0``` and ```create a env with pandas```
 
-# script-stand-histones
+# stand-histones
 
 ## main_stand_dbs.py
 
@@ -37,7 +37,7 @@ python merge_prediction.py Histones_basedGEO_alldbs_dbs.tsv ChIP_Atlas_pred_EpiL
 ```
 
 
-# script_compare_dbs_prediction/
+# compare_dbs_prediction/
 
 ## main.py
 
