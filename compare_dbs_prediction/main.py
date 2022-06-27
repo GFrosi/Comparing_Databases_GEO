@@ -1,6 +1,31 @@
 import sys
 import csv
 from functools import *
+from collections import Counter
+
+
+
+def consensus_col(dbs: list) -> str:
+    """Receives a list of targets
+    and retuns a string if the majority
+    agree/disagree among them"""
+
+    #cleaning list to check conditions
+    to_filter = ['----', 'unclassified']
+    clean_dbs = [ele for ele in dbs if ele not in to_filter]
+    threshold = len(clean_dbs)/2
+
+    #counter dict for each term in the cleaning list
+    dict_counter = Counter(clean_dbs)
+
+    #checking conditions
+    for k,v in dict_counter.items():
+        if v > threshold:
+            
+            return 'Consensus'
+            
+    return 'No_consensus'
+
 
 
 def index_file(file_n):
@@ -33,7 +58,7 @@ def compare_tuples(list_unmatch_dbs):
 def get_index_name(file_n):
 
     first_line = file_n.readline() #getting header
-    new_first_line = '\t'.join([first_line.strip(),'number_dbs_targets', 'dbs_target_match_pred', 'number_dbs_target_match_pred', 'dbs_target_no_match_pred', 'dbs_agreement', 'number_dbs_agreement'])
+    new_first_line = '\t'.join([first_line.strip(),'number_dbs_targets', 'dbs_target_match_pred', 'number_dbs_target_match_pred', 'dbs_target_no_match_pred', 'dbs_agreement', 'number_dbs_agreement', 'Consensus_dbs'])
     header = new_first_line.split('\t')
 
     with open(sys.argv[2], 'w') as f:
@@ -52,9 +77,12 @@ def get_index_name(file_n):
             CA =  samples[50].lower()
             Cdb = samples[83].lower()
             EpiLaP = samples[85].lower()
-            cols = [0,0,0,0,0,0] #solving else for EpiLaP not available
+            cols = [0,0,0,0,0,0,0] #solving else for EpiLaP not available
             samples = samples + cols
         
+            #creating consensus column
+            samples[93] = consensus_col([GEO, NGS, CA, Cdb])
+     
             #Filtering Pred values
             if EpiLaP != '----': #all test lines have pred values
 
@@ -125,15 +153,17 @@ def get_index_name(file_n):
                 #rewriting the file including the new columns
                 writer.writerow(samples)
 
-
+  
 def main():
 
     print('Starting...')
     file_n = open(sys.argv[1], 'r') #file separated by tab (tsv) including Predicted and Max value columns from EpiLaP
     # index_file(file_n)
     # sys.exit()
+
     output_file = sys.argv[2] #path to output file
     get_index_name(file_n)
+    
     print('File sucessfully saved!!')
 
 
