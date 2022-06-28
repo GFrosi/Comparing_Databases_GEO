@@ -80,7 +80,7 @@ def map_dict(df, col_hist):
     df_map = df.copy() #copying the original df
     new_col = col_hist+'_stand' #new target_stand mapped column
     df_map[new_col] = df_map[col_hist].str.lower().map(dict_hist).fillna(df_map[col_hist]) #creating new column
-    df_map.to_csv('test_map_ngs.csv')
+    # df_map.to_csv('test_map_ngs.csv')
     
     return df_map
 
