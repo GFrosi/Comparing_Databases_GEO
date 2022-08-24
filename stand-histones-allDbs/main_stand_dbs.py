@@ -37,22 +37,16 @@ def main():
     df_merge_outer = sd.merge_df_outer(list_df)
     df_merge_outer_unique = df_merge_outer.drop_duplicates('GSM', keep='first')
     print('Your merged df has ' + str(len(df_merge_outer_unique)))
-    # print(merge_df_left['Target molecule_stand']) - correct
     #saving df_merged 
-    # print(df_merge_outer.nunique())
-    # df_merge_outer_unique.to_csv('Compiled_dbs_2022_outer_'+ str(len(df_merge_outer_unique)) + '_' + date +'.csv', index=False) # here is ok, the stand data
+    df_merge_outer_unique.to_csv('Compiled_dbs_2022_outer_'+ str(len(df_merge_outer_unique)) + '_' + date +'.csv', index=False) # here is ok, the stand data
 
     #Histones + Inputs df 
-    # df_hist_inp_geo = sd.filter_histones_inputs(df_map_geo, 'Target-GEO_stand', 'GSE') #ok
+    df_hist_inp_geo = sd.filter_histones_inputs(df_map_geo, 'Target-GEO_stand', 'GSE') #ok
     df_hist_inp_ngs = sd.filter_histones_inputs(df_map_ngs, 'Target molecule_stand', 'Study ID') #ok
-    # df_hist_inp_ca = sd.filter_histones_inputs(df_map_ca, 'Antigen_stand', 'GSE') #ok testing all ca samples
-    # df_hist_inp_cistrome = sd.filter_histones_inputs(df_map_cistrome, 'target_stand', 'GSE') #ok
+    df_hist_inp_ca = sd.filter_histones_inputs(df_map_ca, 'Antigen_stand', 'GSE') #ok testing all ca samples
+    df_hist_inp_cistrome = sd.filter_histones_inputs(df_map_cistrome, 'target_stand', 'GSE') #ok
 
-    print(len(df_hist_inp_ngs))
-
-    sys.exit()
-
-
+    #saving each db file 
     df_hist_inp_geo.to_csv('df_hist_inp_geo.csv', index=False)
     df_hist_inp_ngs.to_csv('df_hist_inp_ngs.csv', index=False)
     df_hist_inp_ca.to_csv('df_hist_inp_ca.csv', index=False)

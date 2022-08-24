@@ -116,19 +116,6 @@ def filter_histones_inputs(df, col_target, col_gse): #generate them for all dbs,
         #sorting values in GSE columns recover all inputs/histones for superseries (i.g NGS GSE88957, GSE88955 / GSE88955, GSE88957)
         df[col_gse] = df[col_gse].str.strip().sort_values().apply(lambda x: ",".join(sorted(str(x).split(","))))
 
-        #Testing problematic example ngs-qc
-        # a = df[df['GSM'].str.contains('GSM2356346')] #why?
-        # c = df[df['GSM'].str.contains('GSM2356341')]
-        
-        # print('c')
-        # frosi = c[col_gse].str.split(',')
-        # print(frosi)
-
-        # print('a')
-        # problem = a[col_gse].str.split(',')
-        # print(problem)
-
-
         #generating hist + input dfs
         list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac']
         df_hist = df[df[col_target].str.contains('|'.join(list_hist), case=False, na=False)] #maybe change to str.match
@@ -136,9 +123,6 @@ def filter_histones_inputs(df, col_target, col_gse): #generate them for all dbs,
 
         df_gse = df[df[col_gse].isin(list_gse_hist)]
         df_input = df_gse[df_gse[col_target].str.contains('input', case=False, na=False)] #change just for input. Map function including list of inputs
-
-        # b = df_input[df_input[col_gse].str.contains('GSE88957')]
-        # print(b)
 
         df_hist_input = pd.concat([df_hist, df_input]) #concatenating hist+inputs
 
