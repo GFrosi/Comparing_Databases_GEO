@@ -179,8 +179,8 @@ def get_index_name(file_n):
 def main():
 
     print('Starting...')
-    file_n = open(sys.argv[1], 'r') #file separated by tab (tsv) including Predicted and Max value columns from EpiLaP
-    # index_file(file_n)
+    file_n = open(sys.argv[1], 'r') #file separated by tab (tsv) including Predicted and Max value columns from EpiLaP (from merge_prediction (standdfs))
+    # index_file(file_n) #run this to check the index before run the script to generate the new columns
     # sys.exit()
 
     output_file = sys.argv[2] #path to output file
