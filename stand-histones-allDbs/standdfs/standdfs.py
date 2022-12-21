@@ -52,7 +52,8 @@ def list_dict_map(df, col_target):
     and values with the standardized term.'''
     
     #maybe here pass a dict of regex as for GEO standardization!
-    list_map = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac','h3k9/14ac','igg','wce','input','input control','control'] #input terms
+    list_map = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','igg','wce','input','input control','control'] #input terms
+    # list_map = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac','h3k9/14ac','igg','wce','input','input control','control'] #input terms
     df_map = df[df[col_target].str.contains('|'.join(list_map), case=False, na=False)] #df to get the typos
     inp = list(set(df_map[col_target].tolist())) #list of hist to create the dict keys
     dict_map = dict.fromkeys(inp) #dict with each histone typo as keys
@@ -117,7 +118,8 @@ def filter_histones_inputs(df, col_target, col_gse): #generate them for all dbs,
         df[col_gse] = df[col_gse].str.strip().sort_values().apply(lambda x: ",".join(sorted(str(x).split(","))))
 
         #generating hist + input dfs
-        list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac']
+        list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3']
+        # list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac']
         df_hist = df[df[col_target].str.contains('|'.join(list_hist), case=False, na=False)] #maybe change to str.match
         list_gse_hist = list(set(df_hist[col_gse].tolist()))
 
