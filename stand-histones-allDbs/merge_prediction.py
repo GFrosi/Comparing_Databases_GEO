@@ -25,7 +25,7 @@ def merge_dfs(df_hist, df_pred):
     EpiLaP prediction - CA) and returns
     a merged df"""
 
-    df_result = df_hist.merge(df_pred, how='left', left_on='SRX_GEO', right_on='Sample').fillna('----')
+    df_result = df_hist.merge(df_pred, how='left', left_on='Srx', right_on='Sample').fillna('----')
 
     return df_result.drop_duplicates()
 

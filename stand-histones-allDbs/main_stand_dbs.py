@@ -11,12 +11,14 @@ def main():
 
     print('Starting...')
 
+    date = datetime.now().strftime("%Y_%m_%d") 
+
     df_geo = sd.read_csv(args.geo)
     df_ngs = sd.read_csv(args.ngs)
     df_ca = sd.read_csv(args.ca)
     df_cistrome = sd.read_csv(args.cistrome)
     df_ngs = sd.rename_col_drop_unnamed(df_ngs, 'Public ID', 'GSM') 
-
+  
     #filtering samples with GSM ID
     df_geo_gsm = sd.check_GSM(df_geo, 'GSM')
     df_ngs_gsm = sd.check_GSM(df_ngs, 'GSM')
@@ -24,21 +26,21 @@ def main():
     df_cistrome_gsm = sd.check_GSM(df_cistrome, 'GSM')
 
     #creating stand target column - histones
-    df_map_geo = sd.map_dict(df_geo_gsm, 'Target-GEO')
+    df_map_geo_1 = sd.map_dict(df_geo_gsm, 'Target-GEO') #GEO - run three times to compare target + chip catalog
+    df_map_geo_2 = sd.map_dict(df_map_geo_1, 'Target-target')
+    df_map_geo_3 = sd.map_dict(df_map_geo_2, 'Target-catalog')
+    df_map_geo = sd.map_dict_catalog(df_map_geo_3, 'Target-catalog_stand')
     df_map_ngs = sd.map_dict(df_ngs_gsm, 'Target molecule')
     df_map_ca = sd.map_dict(df_ca_gsm, 'Antigen')
     df_map_cistrome = sd.map_dict(df_cistrome_gsm, 'target')
-  
-    date = datetime.now().strftime("%Y_%m_%d") 
-
 
     #list df to merge all dfs
     list_df = [df_map_geo, df_map_ngs, df_map_ca, df_map_cistrome] #samples with GSM
-    df_merge_outer = sd.merge_df_outer(list_df)
-    df_merge_outer_unique = df_merge_outer.drop_duplicates('GSM', keep='first')
+    df_merge_outer = sd.merge_df_outer(list_df) #standardizing columns names
+    df_merge_outer_unique = df_merge_outer.drop_duplicates('Gsm', keep='first')
     print('Your merged df has ' + str(len(df_merge_outer_unique)))
     #saving df_merged 
-    df_merge_outer_unique.to_csv('Compiled_dbs_2022_outer_'+ str(len(df_merge_outer_unique)) + '_' + date +'.csv', index=False) # here is ok, the stand data
+    df_merge_outer_unique.to_csv('Compiled_dbs_2023_outer_'+ str(len(df_merge_outer_unique)) + '_' + date +'.csv', index=False) # here is ok, the stand data
 
     #Histones + Inputs df 
     df_hist_inp_geo = sd.filter_histones_inputs(df_map_geo, 'Target-GEO_stand', 'GSE') #ok

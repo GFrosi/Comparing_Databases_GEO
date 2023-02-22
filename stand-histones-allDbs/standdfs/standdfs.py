@@ -78,12 +78,48 @@ def map_dict(df, col_hist):
     column.'''
 
     dict_hist = list_dict_map(df, col_hist) #creating dict to map
+
     df_map = df.copy() #copying the original df
     new_col = col_hist+'_stand' #new target_stand mapped column
     df_map[new_col] = df_map[col_hist].str.lower().map(dict_hist).fillna(df_map[col_hist]) #creating new column
-    # df_map.to_csv('test_map_ngs.csv')
-    
+
     return df_map
+
+
+def map_dict_catalog(df, col_hist_cat):
+
+    #to adjust running few samples not totally clean (e.g ab8580 (Lot GR - GSM2576925)
+    #consider lower case when map
+    #consider if k in column to replace it (check if it is possible using map)
+
+    dict_antb = {
+    '12-371':'input',
+    'ab46540':'input',
+    'G4018':'input',
+    'i2511':'input',
+    'sc-2027':'input',
+    '07-360':'h3k27ac',
+    'ab4729':'h3k27ac',
+    'ab8895':'h3k4me1',
+    # 'ab8895':'h3k4me3',
+    '07-473':'h3k4me3',
+    'ab8580':'h3k4me3',
+    '39159':'h3k4me3',
+    '305-34819':'h3k4me3',
+    'ab8678':'h3k4me3',
+    '9751S':'h3k4me3',
+    '17-614':'h3k4me3',
+    '07-449':'h3k27me3',
+    '300-95289':'h3k36me3',
+    'ab9050':'h3k36me3',
+    'ab8898':'h3k9me3'
+
+    }
+
+    df[col_hist_cat] = df[col_hist_cat].map(dict_antb).fillna(df[col_hist_cat])
+
+    return df
+
 
 
 def merge_df_outer(list_df):
@@ -93,16 +129,26 @@ def merge_df_outer(list_df):
     metadata databases.'''
 
     df_merged = reduce(lambda left,right: pd.merge(left,right, on=['GSM'], how='outer').fillna('----'), list_df) #all Histones/inputs from all dbs
-    df_merged.drop(columns=['SRX_y', 'GSE_y'], inplace=True)
+
+    #organizing columns    
+    df_merged.drop(columns=['SRX_GEO', 'GSE_y'], inplace=True)
     
-    
-    df_merged.rename(columns={'GSE_x':'GSE_GEO', 'Cell_type_x':'Cell_type_GEO', 'SRX_x':'SRX_GEO',
-                          'Organism_x':'Organism_GEO', 
-                         'Cell_type_y':'Cell_type_ChIP_Atlas', 
-                         'target':'Target_CistromeDB',
-                         'cell_type':'Cell_type_CistromeDB',
-                         'Organism_y':'Organism_NGS-QC',
-                         }, inplace=True)
+    df_merged.rename(columns={'Organism_x':'Organism_GEO',
+                        'GSE_x':'GSE-GEO',
+                        'Organism_y':'Organism-NGS-QC',
+                        'cell_line_x':'cell-line-CA',
+                        'tissue_type_x':'tissue-type-CA',
+                        'cell_line_y':'cell-line-CistromeDB',
+                        'tissue_type_y':'tissue-type-CistromeDB',
+                        'target':'Target-CistromeDB',
+                        'target_stand':'Target-CistromeDB_stand'}, inplace=True)
+
+    #standardizing col names
+    df_merged.drop(columns=['Unnamed: 0'], inplace=True)
+    df_merged.columns = df_merged.columns.str.replace(' ', '-')
+    df_merged.columns = df_merged.columns.str.replace('_', '-')
+    df_merged.columns = df_merged.columns.str.replace('_', '-')
+    df_merged.columns = df_merged.columns.str.capitalize()
 
     return df_merged
 
@@ -127,8 +173,7 @@ def filter_histones_inputs(df, col_target, col_gse): #generate them for all dbs,
         df_input = df_gse[df_gse[col_target].str.contains('input', case=False, na=False)] #change just for input. Map function including list of inputs
 
         df_hist_input = pd.concat([df_hist, df_input]) #concatenating hist+inputs
-
-
+        
         return df_hist_input
 
 
@@ -137,7 +182,13 @@ def histone_df(df1, df2): #adjust here to get all dbs
     and df2 (merged_df). Returns a merged_df
     filtered by samples in df1.'''
 
-    df_result = df1[['GSM']].merge(df2, how='left', on='GSM')
+    df_result = df1[['GSM']].merge(df2, how='left', left_on='GSM', right_on='Gsm')
+
+    # cols = df_result.columns.values.tolist()
+
+    # for i in cols:
+    #     print(i)
+
     df_result.drop_duplicates(subset=['GSM'], inplace=True)
  
     return df_result

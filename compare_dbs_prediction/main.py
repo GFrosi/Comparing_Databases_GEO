@@ -87,11 +87,11 @@ def get_index_name(file_n):
             list_unmatch_dbs = []
 
             #if add a column, change the indexes here!
-            GEO = samples[21].lower()
-            NGS = samples[39].lower()
-            CA =  samples[63].lower()
-            Cdb = samples[96].lower()
-            EpiLaP = samples[98].lower()
+            GEO = samples[21].lower() #to change
+            NGS = samples[39].lower() #to change
+            CA =  samples[63].lower() #to change
+            Cdb = samples[96].lower() #to change
+            EpiLaP = samples[98].lower() #to change
             cols = [0,0,0,0,0,0,0,0,0] #solving else for EpiLaP not available
             samples = samples + cols
         

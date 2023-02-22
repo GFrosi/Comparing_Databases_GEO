@@ -10,7 +10,7 @@ def histones_ca_2022_pred(df_ca_hist):
     by filter_hs script (Histone_CA). 
     Returns a Histone_CA merged with 
     all epilap predicted csv files. 
-    The csv files should in the same
+    The csv files should be in the same
     directory of this script"""
     
     date = datetime.now().strftime("%Y_%m_%d")
