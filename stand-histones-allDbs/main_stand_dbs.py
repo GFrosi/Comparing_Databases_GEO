@@ -30,6 +30,7 @@ def main():
     df_map_geo_2 = sd.map_dict(df_map_geo_1, 'Target-target')
     df_map_geo_3 = sd.map_dict(df_map_geo_2, 'Target-catalog')
     df_map_geo = sd.map_dict_catalog(df_map_geo_3, 'Target-catalog_stand')
+
     df_map_ngs = sd.map_dict(df_ngs_gsm, 'Target molecule')
     df_map_ca = sd.map_dict(df_ca_gsm, 'Antigen')
     df_map_cistrome = sd.map_dict(df_cistrome_gsm, 'target')

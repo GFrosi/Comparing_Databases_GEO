@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from functools import reduce
 import sys
+import re
 
 
 
@@ -88,35 +89,36 @@ def map_dict(df, col_hist):
 
 def map_dict_catalog(df, col_hist_cat):
 
-    #to adjust running few samples not totally clean (e.g ab8580 (Lot GR - GSM2576925)
+    #Adjusted running (e.g ab8580 (Lot GR - GSM2576925)
     #consider lower case when map
     #consider if k in column to replace it (check if it is possible using map)
 
     dict_antb = {
-    '12-371':'input',
-    'ab46540':'input',
-    'G4018':'input',
-    'i2511':'input',
-    'sc-2027':'input',
-    '07-360':'h3k27ac',
-    'ab4729':'h3k27ac',
-    'ab8895':'h3k4me1',
-    # 'ab8895':'h3k4me3',
-    '07-473':'h3k4me3',
-    'ab8580':'h3k4me3',
-    '39159':'h3k4me3',
-    '305-34819':'h3k4me3',
-    'ab8678':'h3k4me3',
-    '9751S':'h3k4me3',
-    '17-614':'h3k4me3',
-    '07-449':'h3k27me3',
-    '300-95289':'h3k36me3',
-    'ab9050':'h3k36me3',
-    'ab8898':'h3k9me3'
-
+    '12-371':'input','ab46540':'input','G4018':'input','i2511':'input','sc-2027':'input',
+    '07-360':'h3k27ac','ab4729':'h3k27ac','8173':'h3k27ac','39135':'h3k27ac','39133':'h3k27ac',
+    'C15410196':'h3k27ac','C15410184':'h3k27ac',
+    'ab8895':'h3k4me1','8895':'h3k4me1','39297':'h3k4me1','39635':'h3k4me1',
+    '07-436':'h3k4me1','C15410194':'h3k4me1','cs-037-100':'h3k4me1','pAb-037-050':'h3k4me1',
+    '07-473':'h3k4me3','ab8580':'h3k4me3','39159':'h3k4me3','39-159':'h3k4me3','305-34819':'h3k4me3',
+    '9751S':'h3k4me3','9751':'h3k4me3','17-614':'h3k4me3','307-34813':'h3k4me3','C15200152':'h3k4me3','C15410003':'h3k4me3',
+    'ab1012':'h3k4me3','pAb-003-050':'h3k4me3','pAb-MEHAHS-024':'h3k4me3','05-745R':'h3k4me3','04-745':'h3k4me3',
+    '07-449':'h3k27me3','ab6002':'h3k27me3','CS200603':'h3k27me3','CS20060':'h3k27me3','C36B11':'h3k27me3','C15410069':'h3k27me3',
+    'ABE44':'h3k27me3','39155':'h3k27me3','192985':'h3k27me3','17-622':'h3k27me3','9733':'h3k27me3','39536':'h3k27me3','61017':'h3k27me3',
+    'C15410195':'h3k27me3','61017':'h3k27me3','301-95253':'h3k27me3',
+    '300-95289':'h3k36me3','CS-058-100':'h3k36me3','61101':'h3k36me3','61021':'h3k36me3','302-95283':'h3k36me3','ab9050':'h3k36me3','C15410192':'h3k36me3',
+    'ab8898':'h3k9me3','39765':'h3k9me3','07-442':'h3k9me3','17-10242':'h3k9me3','17-625':'h3k9me3','9754S':'h3k9me3','ab1186':'h3k9me3',
+    '39161':'h3k9me3','C15410193':'h3k9me3','pAb-056-050':'h3k9me3'
     }
 
-    df[col_hist_cat] = df[col_hist_cat].map(dict_antb).fillna(df[col_hist_cat])
+    #keys to lower case to avoid mismatches while looking at col values
+    dict_antb_lower = {k.lower():v for k,v in dict_antb.items()} 
+
+    #Creating regex patterns for keys (several times keys are subsrings of col values, i.e ab8580 (Lot GR - GSM2576925 )
+
+    pat = '|'.join(r"\b{}\b".format(x) for x in dict_antb_lower.keys())
+    df[col_hist_cat] = df[col_hist_cat].str.lower().str.extract('('+ pat + ')', expand=False).map(dict_antb_lower)
+
+
 
     return df
 
