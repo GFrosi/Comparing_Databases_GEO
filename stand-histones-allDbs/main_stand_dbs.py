@@ -21,9 +21,13 @@ def main():
   
     #filtering samples with GSM ID
     df_geo_gsm = sd.check_GSM(df_geo, 'GSM')
+    print('df_geo_gsm cols:', df_geo_gsm.columns)
     df_ngs_gsm = sd.check_GSM(df_ngs, 'GSM')
+    print('df_ngs_gsm cols:', df_ngs_gsm.columns)
     df_ca_gsm = sd.check_GSM(df_ca, 'GSM')
+    print('df_ca_gsm cols:', df_ca_gsm.columns)
     df_cistrome_gsm = sd.check_GSM(df_cistrome, 'GSM')
+    print('df_cistrome_gsm cols:', df_cistrome_gsm.columns)
 
     #creating stand target column - histones
     df_map_geo_1 = sd.map_dict(df_geo_gsm, 'Target-GEO') #GEO - run three times to compare target + chip catalog
@@ -44,10 +48,10 @@ def main():
     df_merge_outer_unique.to_csv('Compiled_dbs_2023_outer_'+ str(len(df_merge_outer_unique)) + '_' + date +'.csv', index=False) # here is ok, the stand data
 
     #Histones + Inputs df 
-    df_hist_inp_geo = sd.filter_histones_inputs(df_map_geo, 'Target-GEO_stand', 'GSE') #ok
-    df_hist_inp_ngs = sd.filter_histones_inputs(df_map_ngs, 'Target molecule_stand', 'Study ID') #ok
-    df_hist_inp_ca = sd.filter_histones_inputs(df_map_ca, 'Antigen_stand', 'GSE') #ok testing all ca samples
-    df_hist_inp_cistrome = sd.filter_histones_inputs(df_map_cistrome, 'target_stand', 'GSE') #ok
+    df_hist_inp_geo = sd.filter_histones_inputs(df_map_geo, 'Target-GEO_stand') #ok
+    df_hist_inp_ngs = sd.filter_histones_inputs(df_map_ngs, 'Target molecule_stand') #ok
+    df_hist_inp_ca = sd.filter_histones_inputs(df_map_ca, 'Antigen_stand') #ok testing all ca samples
+    df_hist_inp_cistrome = sd.filter_histones_inputs(df_map_cistrome, 'target_stand') #ok
 
     #saving each db file 
     df_hist_inp_geo.to_csv('df_hist_inp_geo.csv', index=False)

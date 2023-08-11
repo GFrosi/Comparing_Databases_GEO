@@ -119,7 +119,6 @@ def map_dict_catalog(df, col_hist_cat):
     df[col_hist_cat] = df[col_hist_cat].str.lower().str.extract('('+ pat + ')', expand=False).map(dict_antb_lower)
 
 
-
     return df
 
 
@@ -131,12 +130,16 @@ def merge_df_outer(list_df):
     metadata databases.'''
 
     df_merged = reduce(lambda left,right: pd.merge(left,right, on=['GSM'], how='outer').fillna('----'), list_df) #all Histones/inputs from all dbs
+    # cols = df_merged.columns.values.tolist()
+    # print('df_merged cols:', cols)
+    # sys.exit()
 
-    #organizing columns    
-    df_merged.drop(columns=['SRX_GEO', 'GSE_y'], inplace=True)
+    #organizing columns    - CHECK COLUMNS TOMORROW!
+    df_merged.drop(columns=['SRX_y', 'GSE_y','Unnamed: 0'], inplace=True)
     
     df_merged.rename(columns={'Organism_x':'Organism_GEO',
                         'GSE_x':'GSE-GEO',
+                        'SRX_x': 'SRX_GEO',
                         'Organism_y':'Organism-NGS-QC',
                         'cell_line_x':'cell-line-CA',
                         'tissue_type_x':'tissue-type-CA',
@@ -145,38 +148,57 @@ def merge_df_outer(list_df):
                         'target':'Target-CistromeDB',
                         'target_stand':'Target-CistromeDB_stand'}, inplace=True)
 
+
     #standardizing col names
-    df_merged.drop(columns=['Unnamed: 0'], inplace=True)
+    # df_merged.drop(columns=['Unnamed: 0'], inplace=True)
     df_merged.columns = df_merged.columns.str.replace(' ', '-')
     df_merged.columns = df_merged.columns.str.replace('_', '-')
-    df_merged.columns = df_merged.columns.str.replace('_', '-')
-    df_merged.columns = df_merged.columns.str.capitalize()
+    # df_merged.columns = df_merged.columns.str.replace('_', '-')
+    df_merged.columns = df_merged.columns.str.capitalize() #fisrt letter
+
+
+    cols = df_merged.columns.values.tolist()
+    print('df_merged cols:', cols)
+    # sys.exit()
 
     return df_merged
 
 
-def filter_histones_inputs(df, col_target, col_gse): #generate them for all dbs, then merge outer
-        '''Receives a metadata df (e.g GEO), target
-        and GSE column name. Returns a df containig
-        samples identified as Histones of interest and
-        their respective inputs (input samples from
-        the same series).'''
+def filter_histones_inputs(df, col_target):
+    '''Receives a metadata df (e.g GEO) and
+    target column name. Returns a df containig
+    samples identified as Histones of interest
+    and inputs'''
 
-        #sorting values in GSE columns recover all inputs/histones for superseries (i.g NGS GSE88957, GSE88955 / GSE88955, GSE88957)
-        df[col_gse] = df[col_gse].str.strip().sort_values().apply(lambda x: ",".join(sorted(str(x).split(","))))
+    list_targets = ['H3K4me3','H3K4me1','H3K9me3','H3K36me3','H3K27ac','H3K27me3','Input'] #stand columns
+    
+    return df[df[col_target].str.contains('|'.join(list_targets), case=False, na=False)]    
 
-        #generating hist + input dfs
-        list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3']
-        # list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac']
-        df_hist = df[df[col_target].str.contains('|'.join(list_hist), case=False, na=False)] #maybe change to str.match
-        list_gse_hist = list(set(df_hist[col_gse].tolist()))
 
-        df_gse = df[df[col_gse].isin(list_gse_hist)]
-        df_input = df_gse[df_gse[col_target].str.contains('input', case=False, na=False)] #change just for input. Map function including list of inputs
+# def filter_histones_inputs(df, col_target, col_gse): #generate them for all dbs, then merge outer
+#         '''Receives a metadata df (e.g GEO), target
+#         and GSE column name. Returns a df containig
+#         samples identified as Histones of interest and
+#         their respective inputs (input samples from
+#         the same series).'''
 
-        df_hist_input = pd.concat([df_hist, df_input]) #concatenating hist+inputs
+#         #sorting values in GSE columns recover all inputs/histones for superseries (i.g NGS GSE88957, GSE88955 / GSE88955, GSE88957)
+#         df[col_gse] = df[col_gse].str.strip().sort_values().apply(lambda x: ",".join(sorted(str(x).split(","))))
+
+#         #generating hist + input dfs
+#         list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3']
+#         # list_hist = ['h3k4me3','h3k4me1','h3k9me3','h3k36me3','h3k27ac','h3k27me3','h3k9ac']
+#         df_hist = df[df[col_target].str.contains('|'.join(list_hist), case=False, na=False)] #maybe change to str.match
+#         list_gse_hist = list(set(df_hist[col_gse].tolist()))
+
+#         df_gse = df[df[col_gse].isin(list_gse_hist)]
+#         df_input = df_gse[df_gse[col_target].str.contains('input', case=False, na=False)] #change just for input. Map function including list of inputs
+
+#         df_hist_input = pd.concat([df_hist, df_input]) #concatenating hist+inputs
         
-        return df_hist_input
+#         return df_hist_input
+
+
 
 
 def histone_df(df1, df2): #adjust here to get all dbs
