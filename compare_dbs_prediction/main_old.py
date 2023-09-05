@@ -33,7 +33,7 @@ def consensus_col(dbs: list) -> str:
     #counter dict for each term in the cleaning list
     dict_counter = Counter(clean_dbs)
 
-    #checking conditions #to get the consensus target: get the higher v and print k (target)
+    #checking conditions
     for k,v in dict_counter.items():
         if v > threshold:
             
@@ -73,20 +73,8 @@ def compare_tuples(list_unmatch_dbs):
 def get_index_name(file_n):
 
     first_line = file_n.readline() #getting header
-    new_first_line = '\t'.join([first_line.strip(),'Consensus_dbs_4',
-                                'Consensus_dbs_3',  
-                                'Identical_4', 
-                                'Identical_3',
-                                'number_dbs_targets', 
-                                'dbs_target_match_pred', 
-                                'number_dbs_target_match_pred', 
-                                'dbs_target_no_match_pred', 
-                                'dbs_agreement', 
-                                'number_dbs_agreement', 
-                                ])
-    # new_first_line = '\t'.join([first_line.strip(),'Consensus_dbs', 'Identical_4', 'Identical_3'])
-    
-    header = new_first_line.split('\t') #tab
+    new_first_line = '\t'.join([first_line.strip(),'number_dbs_targets', 'dbs_target_match_pred', 'number_dbs_target_match_pred', 'dbs_target_no_match_pred', 'dbs_agreement', 'number_dbs_agreement', 'Consensus_dbs', 'Identical_4', 'Identical_3'])
+    header = new_first_line.split('\t')
 
     with open(sys.argv[2], 'w') as f:
         
@@ -99,29 +87,23 @@ def get_index_name(file_n):
             list_unmatch_dbs = []
 
             #if add a column, change the indexes here!
-            GEO = samples[25].lower()
-            NGS = samples[45].lower()
-            CA =  samples[69].lower()
-            Cdb = samples[102].lower()
-            EpiLaP = samples[107].lower()
-            cols = [0,0,0,0,0,0,0,0,0,0] #solving else for EpiLaP not available
-            # cols = [0,0,0] #solving else for EpiLaP not available
+            GEO = samples[21].lower() #to change
+            NGS = samples[39].lower() #to change
+            CA =  samples[63].lower() #to change
+            Cdb = samples[96].lower() #to change
+            EpiLaP = samples[98].lower() #to change
+            cols = [0,0,0,0,0,0,0,0,0] #solving else for EpiLaP not available
             samples = samples + cols
         
-            #creating consensus 4 column
-            samples[152] = consensus_col([GEO, NGS, CA, Cdb])
-
-            #creating consensus 3 column
-            samples[153] = consensus_col([NGS, CA, Cdb])
+            #creating consensus column
+            samples[106] = consensus_col([GEO, NGS, CA, Cdb])
            
             #creating identical_4
-            samples[154] = identical_col([GEO, NGS, CA, Cdb])
+            samples[107] = identical_col([GEO, NGS, CA, Cdb])
 
             #creating identical_3 - excluding GEO
-            samples[155] = identical_col([ NGS, CA, Cdb])
-  
-            # writer.writerow(samples)
-
+            samples[108] = identical_col([ NGS, CA, Cdb])
+     
             #Filtering Pred values
             if EpiLaP != '----': #all test lines have pred values
 
@@ -160,44 +142,45 @@ def get_index_name(file_n):
                
             #Creating new columns
             #number of dbs with targets
-            samples[156] = len(list_match_dbs) + len(list_unmatch_dbs) #before 87 index
+            samples[100] = len(list_match_dbs) + len(list_unmatch_dbs) #before 87 index
             
             if len(list_match_dbs) > 0 : #list from comparison with EpiLaP pred
                 #dbs with match match pred
-                samples[157] = ','.join(list_match_dbs) 
+                samples[101] = ','.join(list_match_dbs) 
 
                 #number of dbs with match prediction 
-                samples[158] = len(list_match_dbs)
+                samples[102] = len(list_match_dbs)
 
                 # number of dbs no match with pred 
-                samples[159] = len(list_unmatch_dbs)
+                samples[103] = len(list_unmatch_dbs)
 
             #dbs agreement no match pred; number dbs agreement no match pred (or just among them)
             if len(list_unmatch_dbs) >= 2:
                 res_ltup = compare_tuples(list_unmatch_dbs)
                 if len(res_ltup) == 0:
-                    samples[160] = 'no match dbs'
+                    samples[104] = 'no match dbs'
                     
                 else:
-                    samples[160] = ",".join(res_ltup)
+                    samples[104] = ",".join(res_ltup)
                   
-                samples[161] = len(res_ltup)
+                samples[105] = len(res_ltup)
                 writer.writerow(samples)
 
             else: #if list len(unmatch) == 0 or 1
                 list_dbs_nomatch = [i[0] for i in list_unmatch_dbs]
-                samples[161] = ",".join(list_dbs_nomatch) # we do not have an agreement between databases 
-                samples[161] = len(list_unmatch_dbs)
+                samples[105] = ",".join(list_dbs_nomatch) # we do not have an agreement between databases 
+                samples[105] = len(list_unmatch_dbs)
 
                 #rewriting the file including the new columns
                 writer.writerow(samples)
+
 
   
 def main():
 
     print('Starting...')
-    file_n = open(sys.argv[1], 'r') #file separated by tab (tsv) including Predicted and Max value columns from EpiLaP
-    # index_file(file_n)
+    file_n = open(sys.argv[1], 'r') #file separated by tab (tsv) including Predicted and Max value columns from EpiLaP (from merge_prediction (standdfs))
+    # index_file(file_n) #run this to check the index before run the script to generate the new columns
     # sys.exit()
 
     output_file = sys.argv[2] #path to output file
